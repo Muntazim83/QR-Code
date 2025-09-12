@@ -1,0 +1,188 @@
+
+<style>
+  body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background: #111;
+    color: #fff;
+    font-family: "Segoe UI", sans-serif;
+  }
+
+  .container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 20px;
+    background: #1e1e1e;
+    border-radius: 12px;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+    max-width: 600px;
+    margin: auto;
+  }
+
+  input[type="password"] {
+    padding: 10px;
+    margin: 10px;
+    width: 80%;
+    border: none;
+    border-radius: 8px;
+    outline: none;
+    font-size: 16px;
+  }
+
+  button {
+    padding: 10px 20px;
+    margin: 10px;
+    background-color: #00b894;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.3s;
+  }
+
+  button:hover {
+    background-color: #019875;
+  }
+
+  table {
+    width: 100%;
+    margin-top: 20px;
+    border-collapse: collapse;
+  }
+
+  th, td {
+    padding: 12px;
+    text-align: center;
+    border-bottom: 1px solid #444;
+  }
+
+  th {
+    background-color: #2d3436;
+  }
+
+  img {
+    border-radius: 50%;
+  }
+
+  @media screen and (max-width: 600px) {
+    .container {
+      width: 90%;
+    }
+
+    input[type="password"] {
+      width: 100%;
+    }
+
+    button {
+      width: 100%;
+    }
+
+    table {
+      font-size: 14px;
+    }
+  }
+</style>
+
+
+
+<body>
+
+  <div class="container">
+    <h2>🔐 Master Access</h2>
+
+    <!-- Master Auth Section -->
+    <div id="authSection">
+      <input type="password" id="masterPass" placeholder="Enter Master Password" />
+      <button onclick="checkMaster()">Enter</button>
+    </div>
+
+    <!-- Set/View Users Section -->
+    <div id="userSection" style="display: none;">
+      <h3>👥 Registered Users</h3>
+
+      <input type="password" id="viewKey" placeholder="Enter secret key to view users" />
+      <button onclick="revealUsers()">Show Users</button>
+
+      <table id="userTableBox" style="display: none;">
+        <thead>
+          <tr>
+            <th>Username</th>
+            <th>Profile</th>
+            <th>Password</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="userTable"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    const MASTER_PASSWORD = "Muntazim"; // Fixed master entry
+    const SECRET_VIEW_KEY = "Muntazim0"; // You can change this to your custom view password
+
+    function checkMaster() {
+      const pass = document.getElementById("masterPass").value;
+      if (pass === MASTER_PASSWORD) {
+        document.getElementById("authSection").style.display = "none";
+        document.getElementById("userSection").style.display = "block";
+      } else {
+        alert("Wrong Master Password");
+      }
+    }
+
+    function revealUsers() {
+      const key = document.getElementById("viewKey").value;
+      if (key === SECRET_VIEW_KEY) {
+        document.getElementById("userTableBox").style.display = "table";
+        loadUsers();
+      } else {
+        alert("Incorrect secret key to view users!");
+      }
+    }
+
+    function loadUsers() {
+      const users = JSON.parse(localStorage.getItem("users") || "[]");
+      const table = document.getElementById("userTable");
+      table.innerHTML = "";
+
+      users.forEach((user, index) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${user.username}</td>
+          <td><img src="${user.profile || ''}" width="40"/></td>
+          <td>${user.password}</td>
+          <td>
+            <button onclick="editUser(${index})">Edit</button>
+            <button onclick="deleteUser(${index})">Delete</button>
+          </td>
+        `;
+        table.appendChild(tr);
+      });
+    }
+
+    function deleteUser(index) {
+      if (confirm("Are you sure?")) {
+        const users = JSON.parse(localStorage.getItem("users") || "[]");
+        users.splice(index, 1);
+        localStorage.setItem("users", JSON.stringify(users));
+        loadUsers();
+      }
+    }
+
+    function editUser(index) {
+      const users = JSON.parse(localStorage.getItem("users") || "[]");
+      const newPass = prompt("Enter new password:");
+      if (newPass) {
+        users[index].password = newPass;
+        localStorage.setItem("users", JSON.stringify(users));
+        loadUsers();
+      }
+    }
+  </script>
+</body>
