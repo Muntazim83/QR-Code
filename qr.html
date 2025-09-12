@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>QR Generator</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <button id="logoutBtn">Logout</button>
+    <h2>QR Code Generator</h2>
+
+    <input type="text" id="qrText" placeholder="Enter text or URL" required style="font-size:16px;" />
+    <label style="margin-top:10px;">Background Image (optional)</label>
+    <input type="file" id="bgImage" accept="image/*" style="font-size:16px;" />
+    <label style="margin-top:10px;">Logo (optional)</label>
+    <input type="file" id="logoImage" accept="image/*" style="font-size:16px;" />
+    <a href="master.html"><button>Master section (only Admin Can use)</button></a>
+    <div class="controls" style="display: flex; flex-wrap: wrap; gap: 10px;">
+      <label>Size:</label>
+      <select id="qrSize" style="flex:1; min-width:100px;">
+        <option value="200">Small</option>
+        <option value="300" selected>Medium</option>
+        <option value="400">Large</option>
+      </select>
+      <label>Color:</label>
+      <input type="color" id="qrColor" value="#000000" style="width:48px; height:48px;" />
+      <label><input type="checkbox" id="transparentBg" /> Transparent BG</label>
+    </div>
+    <button onclick="generateQR()">Generate QR</button>
+    <button onclick="downloadQR()" style="margin-top:10px;">Download QR</button>
+    <div id="qrcode"></div>
+    <button id="darkToggle" style="margin-top:10px;">Toggle Dark Mode</button>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
+  <script>
+    const qrcodeContainer = document.getElementById("qrcode");
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    logoutBtn.addEventListener("click", function() {
+      localStorage.removeItem("loggedInUser");
+      window.location.href = "index.html";
+    });
+
+    // Protect Page
+    const user = JSON.parse(localStorage.getItem("loggedInUser"));
+    if (!user) {
+      window.location.href = "index.html";
+    }
+
+    function generateQR() {
+      const text = document.getElementById("qrText").value;
+      const size = parseInt(document.getElementById("qrSize").value);
+      const color = document.getElementById("qrColor").value;
+      const transparent = document.getElementById("transparentBg").checked;
+      const logoFile = document.getElementById("logoImage").files[0];
+      const bgFile = document.getElementById("bgImage").files[0];
+
+      qrcodeContainer.innerHTML = "";
+
+      const qr = new QRCode(qrcodeContainer, {
+        text: text,
+        width: size,
+        height: size,
+        colorDark: color,
+        colorLight: transparent ? "transparent" : "#ffffff",
+        correctLevel: QRCode.CorrectLevel.H
+      });
+
+      // Overlay background image and logo after short delay
+      setTimeout(function() {
+        const canvas = qrcodeContainer.querySelector("canvas");
+        if (!canvas) return;
+
+        const ctx = canvas.getContext("2d");
+
+        if (bgFile) {
+          const bg = new Image();
+          bg.onload = function() {
+            ctx.globalAlpha = 0.4;
+            ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
+            ctx.globalAlpha = 1;
+          };
+          bg.src = URL.createObjectURL(bgFile);
+        }
+
+        if (logoFile) {
+          const logo = new Image();
+          logo.onload = function() {
+            const sizeLogo = canvas.width / 4;
+            const x = (canvas.width - sizeLogo) / 2;
+            const y = (canvas.height - sizeLogo) / 2;
+            ctx.drawImage(logo, x, y, sizeLogo, sizeLogo);
+          };
+          logo.src = URL.createObjectURL(logoFile);
+        }
+      }, 500);
+    }
+
+    function downloadQR() {
+      const canvas = qrcodeContainer.querySelector("canvas");
+      if (!canvas) return;
+      const link = document.createElement("a");
+      link.download = "qr_code.png";
+      link.href = canvas.toDataURL();
+      link.click();
+    }
+
+    // 🌙 Dark Mode
+    document.getElementById("darkToggle").addEventListener("click", function() {
+      document.body.classList.toggle("dark");
+    });
+  </script>
+</body>
+</html>
