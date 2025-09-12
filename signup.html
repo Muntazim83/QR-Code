@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Signup</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <form id="signupForm">
+      <h2>Signup</h2>
+
+            <input type="email" id="email" placeholder="Email" required />
+      <input type="text" id="newUsername" placeholder="Username" required />
+      <input type="password" id="newPassword" placeholder="Password" required />
+      <small id="strengthText" style="font-weight: bold;"></small>
+      <div id="strengthBar" style="height: 8px; border-radius: 5px; margin-top: 5px;"></div>
+
+      <label>Upload Profile Image</label>
+      <input type="file" id="profileImage" accept="image/*" />
+      <img id="profilePreview" src="#" alt="Preview" />
+
+      <button type="submit">Signup</button>
+      <p>Already have an account? <a href="index.html">Login</a></p>
+    </form>
+  </div>
+
+  <script>
+    // 👤 Profile Preview
+    document.getElementById("profileImage").addEventListener("change", function () {
+      const file = this.files[0];
+      const reader = new FileReader();
+
+      reader.onload = function (e) {
+        document.getElementById("profilePreview").src = e.target.result;
+        document.getElementById("profilePreview").style.display = "block";
+      };
+
+      if (file) reader.readAsDataURL(file);
+    });
+
+    // 🔐 Password Strength Checker
+    const passwordInput = document.getElementById("newPassword");
+    const strengthText = document.getElementById("strengthText");
+    const strengthBar = document.getElementById("strengthBar");
+
+    passwordInput.addEventListener("input", () => {
+      const val = passwordInput.value;
+      let strength = 0;
+
+      if (val.length >= 6) strength++;
+      if (/[A-Z]/.test(val)) strength++;
+      if (/[0-9]/.test(val)) strength++;
+      if (/[\W]/.test(val)) strength++;
+
+      switch (strength) {
+        case 0:
+        case 1:
+          strengthText.textContent = "Weak";
+          strengthText.style.color = "red";
+          strengthBar.style.background = "red";
+          strengthBar.style.width = "25%";
+          break;
+        case 2:
+          strengthText.textContent = "Medium";
+          strengthText.style.color = "orange";
+          strengthBar.style.background = "orange";
+          strengthBar.style.width = "50%";
+          break;
+        case 3:
+          strengthText.textContent = "Strong";
+          strengthText.style.color = "green";
+          strengthBar.style.background = "green";
+          strengthBar.style.width = "75%";
+          break;
+        case 4:
+          strengthText.textContent = "Very Strong";
+          strengthText.style.color = "darkgreen";
+          strengthBar.style.background = "darkgreen";
+          strengthBar.style.width = "100%";
+          break;
+      }
+    });
+
+    // 💾 Signup Save
+    document.getElementById("signupForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      const username = document.getElementById("newUsername").value;
+      const password = document.getElementById("newPassword").value;
+      const profileImage = document.getElementById("profileImage").files[0];
+
+      const reader = new FileReader();
+      reader.onload = function () {
+        const imageData = reader.result;
+        const users = JSON.parse(localStorage.getItem("users") || "[]");
+
+        users.push({ username, password, image: imageData });
+        localStorage.setItem("users", JSON.stringify(users));
+
+        alert("Signup successful!");
+        window.location.href = "index.html";
+      };
+
+      if (profileImage) {
+        reader.readAsDataURL(profileImage);
+      } else {
+        const users = JSON.parse(localStorage.getItem("users") || "[]");
+        users.push({ username, password, image: null });
+        localStorage.setItem("users", JSON.stringify(users));
+        alert("Signup successful!");
+        window.location.href = "index.html";
+      }
+    });
+  </script>
+</body>
+</html>
