@@ -1,0 +1,106 @@
+/* General Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+/* Light & Dark mode */
+body {
+  background: #f0f0f0;
+  color: #222;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+body.dark {
+  background: #121212;
+  color: #fff;
+}
+
+.container {
+  background: white;
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  max-width: 400px;
+  width: 100%;
+}
+
+body.dark .container {
+  background: #1f1f1f;
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Inputs & buttons */
+input, select, button {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #bbb;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+input[type="color"] {
+  padding: 4px;
+  height: 40px;
+}
+
+button {
+  background: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+button:hover {
+  background: #0056b3;
+}
+
+#logoutBtn {
+  background: crimson;
+  margin-bottom: 10px;
+}
+
+.controls {
+  margin-top: 15px;
+}
+
+.controls label {
+  display: block;
+  margin-top: 10px;
+  font-weight: 500;
+}
+
+/* QR Code container */
+#qrcode {
+  margin-top: 20px;
+  text-align: center;
+}
+
+/* Strength Meter */
+#strengthBar {
+  background: #ccc;
+  transition: width 0.3s ease-in-out;
+}
+
+/* Responsive */
+@media screen and (max-width: 500px) {
+  .container {
+    padding: 20px;
+  }
+
+  input, button {
+    font-size: 14px;
+  }
+}
