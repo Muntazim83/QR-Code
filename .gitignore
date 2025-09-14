@@ -1,0 +1,16 @@
+# Ignore system files, logs, and temp files
+*.log
+*.tmp
+.DS_Store
+Thumbs.db
+node_modules/
+dist/
+.env
+.vscode/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.idea/
+*.swp
+*.swo
